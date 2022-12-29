@@ -24,3 +24,7 @@ a {
     background: black;
   }
 }
+
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
