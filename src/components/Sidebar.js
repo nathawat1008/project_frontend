@@ -25,18 +25,19 @@ const menuItems = [
     // },
 ];
 
-function Sidebar() {
+function Sidebar({ isDisable }) {
     const [status, setStatus] = useState("");
     const [list, setList] = useState([]);
     const [dataAttr, setDataAttr] = useState([]);
     const [isHoverHelpButton, setIsHoverHelpButton] = useState(false);
     const [selectedOption, setSelectedOption] = useState();
     const [dataInfo, setDataInfo] = useState();
+    const [isNull, setisNull] = useState();
     // const [fileName, setFileName] = useState("");
 
     const getLabelClass = async () => {
         try{
-            await fetch('http://localhost:8000/get-label-class', {
+            await fetch('http://localhost:8000/get-data-detail', {
                 method: 'GET',
             })
             .then(res => res.json())
@@ -46,6 +47,8 @@ function Sidebar() {
                 setDataAttr(data.all_class);
                 setSelectedOption(dataAttr[0]);
                 setDataInfo(data.shape);
+                setisNull(`${data.isNull}`);
+                isDisable(data.isNull);
             })
         }
         catch(e) {
@@ -54,9 +57,28 @@ function Sidebar() {
     }
 
     useEffect(() => {
-        (async () => {
-            await getLabelClass();
-        })
+        // (async () => {
+        //     await getLabelClass();
+        // })
+        try{
+            fetch('http://localhost:8000/get-data-detail', {
+                method: 'GET',
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log("data:", data);
+                // setSelectedOption(data.payload)
+                setDataAttr(data.all_class);
+                setSelectedOption(dataAttr[0]);
+                setDataInfo(data.shape);
+                setisNull(`${data.isNull}`);
+                isDisable(data.isNull);
+            })
+        }
+        catch(e) {
+            console.log(e);
+        }
+
     }, []);
 
     // useEffect(() => {
@@ -117,12 +139,20 @@ function Sidebar() {
         })            
         .then(res => res.json())
         .then(data => {
-            setStatus("success");
-            setList([...list, data.filename]);
-            setDataAttr(data.attr); 
-            setDataInfo(data.shape);
-            console.log('upload success !');
-            console.log(data);
+            isDisable(data.isNull);
+            if (data.isNull) {
+                setStatus("Contain Null")
+                setisNull(`${data.isNull}`);
+            }
+            else{
+                setStatus("success");
+                setList([...list, data.filename]);
+                setDataAttr(data.attr); 
+                setDataInfo(data.shape);
+                setisNull(`${data.isNull}`);
+                console.log('upload success !');
+                console.log(data);
+            }
         })
         .catch(err => {
             setStatus("fail");
@@ -172,6 +202,9 @@ function Sidebar() {
         }
 
     }
+    useEffect(() => {
+        console.log("isNull: ", isNull);
+    }, [isNull]);
 
     return (
         <div className="bg-fuchsia-100 w-full sm:w-60">
@@ -191,6 +224,8 @@ function Sidebar() {
                                     : 
                                     status==="fail" ? (<div className='m-2 text-red-500'>Upload Fail !</div>)
                                     :
+                                    status==="Contain Null" ? (<div className='m-2 text-red-500'>Data contain null value</div>)
+                                    :
                                     (<div className="hidden"></div>)
                                 }  
                                 {/* <span id="fileChosen">No file chosen</span> */}
@@ -200,12 +235,12 @@ function Sidebar() {
                                 position="right center">
                                 <div className="p-2">
                                     <div className="text-lg font-bold flex justify-center">Data Limitation</div>
-                                    <div >The data used must be <b>Numerical data</b> that have less than 1000 dimension <b>without NaN</b></div>
+                                    <div >The data used must be <b>Numerical data</b> that have less than 1000 dimension <b>without Null value</b></div>
                                 </div>
                             </Popup>
                         </div>
                         <div className="m-2">
-                            <div>Select Label Class</div>
+                            <div>Select Class Label </div>
                             <select id="label_class" name="label_class" className="input-box"
                                     onChange={(e) => {setSelectedOption(e.target.value); handleChangeSelectLabelAttr(e);}} value={selectedOption}>
                                 {dataAttr.map((attr) => (
@@ -213,7 +248,9 @@ function Sidebar() {
                                 ))}
                             </select>
                         </div>
-                        {dataInfo ? <div className="m-2">Shape: {dataInfo[0]}, {dataInfo[1]}</div> : <></>}
+                        <div className="m-2">Number of Records: {dataInfo ? `${dataInfo[0]}` : "-" }</div>
+                        <div className="m-2">Nudmber of Features: {dataInfo ? `${dataInfo[1]}` : "-" }</div>
+                        <div className="m-2">Contain null value: {isNull ? isNull : ''}</div>
                         {/* <ul>
                             {dataAttr.map((attr) => (
                                 <li>{attr}</li>

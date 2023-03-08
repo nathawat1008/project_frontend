@@ -10,13 +10,22 @@ import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 
 export default function UmapParamsInput({ props, handleChange, handleSubmit }) {
-    const [ collapse, setCollapse ] = useState(false);
-    console.log(props)
-
-    return (
+        const [ collapse, setCollapse ] = useState(false);
+        const [ isDisable, setIsDisable ] = useState(false);
+        console.log(props)
+        useEffect(() => {
+                console.log("props.min_dist", props.min_dist)
+                if (props.min_dist > props.spread){
+                        setIsDisable(true);
+                }
+                else {
+                        setIsDisable(false);
+                }
+        })
+        return (
         <div className="w-1/2 min-w-[500px]">
-            <button onClick={() => setCollapse(!collapse)} className="m-2 mb-0">
-                <span className="mx-2 text-lg font-bold">Custom UMAP Parameters</span>
+            <button onClick={() => setCollapse(!collapse)} className="m-2 flex justify-center items-center gap-2">
+                <span className=" text-lg font-bold">Custom UMAP Parameters</span>
                 <Image src={arrowDown} alt="arrowDown" width={20} height={15}></Image>
             </button>
 
@@ -40,7 +49,7 @@ export default function UmapParamsInput({ props, handleChange, handleSubmit }) {
                         </Popup> 
 
                         <label for="n_neighbors">n_neighbors</label>
-                        <input type="number" id="n_neighbors" name="n_neighbors" className="input-box" value={props.n_neighbors}
+                        <input type="number" id="n_neighbors" name="n_neighbors" className="input-box" value={props.n_neighbors} step="1"
                                 onChange={handleChange}/>        
                                 {/* onChange={(e) => {e.preventDefault(); handleChange("n_neighbors",e.target.value); }}></input> */}
                         <Popup trigger={<div className="flex items-center justify-center w-5 h-5 mt-1 rounded-full border bg-white hover:bg-gray-200 cursor-pointer">?</div>} 
@@ -51,17 +60,6 @@ export default function UmapParamsInput({ props, handleChange, handleSubmit }) {
                         </div>
                         </Popup>      
 
-                        <label for="min_dist">min_dist</label>
-                        <input type="number" id="min_dist" name="min_dist" className="input-box" value={props.min_dist}
-                                onChange={handleChange}></input>
-                                {/* onChange={(e) => {e.preventDefault(); handleChange("min_dist",e.target.value); }}></input> */}
-                        <Popup trigger={<div className="flex items-center justify-center w-5 h-5 mt-1 rounded-full border bg-white hover:bg-gray-200 cursor-pointer">?</div>} 
-                        position="right center">
-                        <div className="p-1">
-                                <div className="text-lg font-bold flex justify-center">min_dist</div>
-                                <div >The effective minimum distance between embedded points. Smaller values will result in a more clustered/clumped embedding where nearby points on the manifold are drawn closer together, while larger values will result on a more even dispersal of points</div>
-                        </div>
-                        </Popup>      
 
 
                         <label for="learning_rate">learning_rate</label>
@@ -77,8 +75,34 @@ export default function UmapParamsInput({ props, handleChange, handleSubmit }) {
                         </Popup>      
 
                         <label for="metric">metric</label>
-                        <input type="text" id="metric" name="metric" className="input-box" value={props.metric}
-                                onChange={handleChange}></input>
+                        <select id="metric" name="metric" className="input-box" value={props.metric}
+                                onChange={handleChange}>
+                                <option value="euclidean">euclidean</option>
+                                <option value="manhattan">manhattan</option>
+                                <option value="chebyshev">chebyshev</option>
+                                <option value="minkowski">minkowski</option>
+                                <option value="canberra">canberra</option>
+                                <option value="braycurtis">braycurtis</option>
+                                <option value="mahalanobis">mahalanobis</option>
+                                <option value="wminkowski">wminkowski</option>
+                                <option value="seuclidean">seuclidean</option>
+                                <option value="cosine">cosine</option>
+                                <option value="correlation">correlation</option>
+                                <option value="haversine">haversine</option>
+                                <option value="hamming">hamming</option>
+                                <option value="haversine">haversine</option>
+                                <option value="jaccard">jaccard</option>
+                                <option value="dice">dice</option>
+                                <option value="russelrao">russelrao</option>
+                                <option value="kulsinski">kulsinski</option>
+                                <option value="ll_dirichlet">ll_dirichlet</option>
+                                <option value="hellinger">hellinger</option>
+                                <option value="rogerstanimoto">rogerstanimoto</option>
+                                <option value="sokalmichener">sokalmichener</option>
+                                <option value="sokalsneath">sokalsneath</option>
+                                <option value="yule">yule</option>
+                                
+                        </select>
                                 {/* onChange={(e) => {e.preventDefault(); handleChange("metric",e.target.value); }}></input> */}
                         <Popup trigger={<div className="flex items-center justify-center w-5 h-5 mt-1 rounded-full border bg-white hover:bg-gray-200 cursor-pointer">?</div>} 
                         position="right center">
@@ -89,7 +113,7 @@ export default function UmapParamsInput({ props, handleChange, handleSubmit }) {
                         </Popup>      
 
                         <label for="n_epochs">n_epochs</label>
-                        <input type="number" id="n_epochs" name="n_epochs" className="input-box" value={props.n_epochs}
+                        <input type="number" id="n_epochs" name="n_epochs" className="input-box" value={props.n_epochs} step="1"
                                 onChange={handleChange}></input>
                                 {/* onChange={(e) => {e.preventDefault(); handleChange("n_epochs",e.target.value); }}></input> */}
                         <Popup trigger={<div className="flex items-center justify-center w-5 h-5 mt-1 rounded-full border bg-white hover:bg-gray-200 cursor-pointer">?</div>} 
@@ -101,14 +125,31 @@ export default function UmapParamsInput({ props, handleChange, handleSubmit }) {
                         </Popup>      
 
                         <label for="init">init</label>
-                        <input type="text" id="init" name="init" className="input-box" value={props.init} placeholder="random or pca"
-                                onChange={handleChange}></input>
+                        <select  id="init" name="init" className="input-box" value={props.init} placeholder="random or pca"
+                                onChange={handleChange}>
+                                <option value="spectral">spectral</option>
+                                <option value="random">random</option>
+                                <option value="pca">pca</option>
+
+                        </select>
                                 {/* onChange={(e) => {e.preventDefault(); handleChange("init",e.target.value); }}></input> */}
                         <Popup trigger={<div className="flex items-center justify-center w-5 h-5 mt-1 rounded-full border bg-white hover:bg-gray-200 cursor-pointer">?</div>} 
                         position="right center">
                         <div className="p-1">
                                 <div className="text-lg font-bold flex justify-center">init</div>
                                 <div >How to initialize the low dimensional embedding. Options are: ‘spectral’ , ‘random’ , ‘pca’ , A numpy array of initial embedding positions.</div>
+                        </div>
+                        </Popup> 
+
+                        <label for="min_dist">min_dist</label>
+                        <input type="number" id="min_dist" name="min_dist" className="input-box" value={props.min_dist}
+                                onChange={handleChange}></input>
+                                {/* onChange={(e) => {e.preventDefault(); handleChange("min_dist",e.target.value); }}></input> */}
+                        <Popup trigger={<div className="flex items-center justify-center w-5 h-5 mt-1 rounded-full border bg-white hover:bg-gray-200 cursor-pointer">?</div>} 
+                        position="right center">
+                        <div className="p-1">
+                                <div className="text-lg font-bold flex justify-center">min_dist</div>
+                                <div >The effective minimum distance between embedded points. Smaller values will result in a more clustered/clumped embedding where nearby points on the manifold are drawn closer together, while larger values will result on a more even dispersal of points. <b>min_dist must be less than or equal to spread</b></div>
                         </div>
                         </Popup>      
 
@@ -125,8 +166,11 @@ export default function UmapParamsInput({ props, handleChange, handleSubmit }) {
                         </Popup>      
 
                         <label for="low_memory">low_memory</label>
-                        <input type="select" id="low_memory" name="low_memory" className="input-box" value={props.low_memory}
-                                onChange={handleChange}></input>
+                        <select  id="low_memory" name="low_memory" className="input-box" value={props.low_memory}
+                                onChange={handleChange}>
+                                <option value="true">true</option>
+                                <option value="false">false</option>
+                        </select>
                                 {/* onChange={(e) => {e.preventDefault(); handleChange("low_memory",e.target.value); }}></input> */}
                         <Popup trigger={<div className="flex items-center justify-center w-5 h-5 mt-1 rounded-full border bg-white hover:bg-gray-200 cursor-pointer">?</div>} 
                         position="right center">
@@ -148,11 +192,12 @@ export default function UmapParamsInput({ props, handleChange, handleSubmit }) {
                         </div>
                         </Popup>      
 
-                        <input type="submit" className="mt-2 border-2 bg-white hover:bg-fuchsia-400 hover:text-white hover:cursor-pointer" 
-                                onClick={(e) => {e.preventDefault(); handleSubmit();}} value="Submit"></input>
                 </form>
-            </Collapse>
+                </Collapse>
+                        {isDisable === true ? <div className="mx-2 text-red-600">min_dist must be less than or equal to spread.</div> : <div></div>}
+                        <input type="submit" className="m-2 p-1 rounded border-2 bg-white hover:bg-fuchsia-400 enabled:hover:text-white enabled:hover:cursor-pointer disabled:bg-gray-300" 
+                                onClick={(e) => {e.preventDefault(); handleSubmit();}} disabled={isDisable} value="Visualize"></input>
 
         </div>
-    )
+        )
 }

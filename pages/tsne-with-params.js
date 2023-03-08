@@ -9,6 +9,7 @@ import axios from 'axios'
 import LoadingSpinner from "../src/components/LoadingSpinner";
 import TsneParamsInput from '../src/components/TsneParam'
 import DownloadButton from "../src/components/DownloadButton";
+import Error from "../public/error_icon.svg"
 
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
@@ -21,10 +22,11 @@ const makePathParams = (params) => {
             )
 }
 
-function Images() {
+function Images({ props }) {
     const [img, setImg] = useState('');
     const [isSubmit, setIsSubmit] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [status, setStatus] = useState("wait");
 
     let url;
     let body = {
@@ -122,58 +124,78 @@ function Images() {
             // url = window.URL.createObjectURL(response)           
             setIsLoading(false);
             console.log('url:', url)
-
+            setStatus("success")
         } catch (error) {
             setImg('/')
             console.error(error);
             setIsLoading(false);
+            setStatus("fail");
         }
-      
     }, []);
 
-    // const handleParamChange = (e) => {
-    //     // setIsSubmit(false);
-    //     const change = e.target.name;
-    //     const values = e.target.value;
-    //     console.log(change, values);
-    //     if (change === "n_components") { setParams({...params, n_components:values}); }
-    //     else if (change === "perplexity") { setParams({...params, perplexity:values}); }
-    //     else if (change === "early_exaggeration") { setParams({...params, early_exaggeration:values}); }
-    //     else if (change === "learning_rate") { setParams({...params, learning_rate:values}); }
-    //     else if (change === "n_iter") { setParams({...params, n_iter:values}); }
-    //     else if (change === "n_iter_without_progress") { setParams({...params, n_iter_without_progress:values}); }
-    //     else if (change === "init") { setParams({...params, init:values}); }
-    //     else if (change === "verbose") { setParams({...params, verbose:values}); }
-    //     else if (change === "angle") { setParams({...params, angle:values}); }
-    // };
-    const handleParamChange = (event) => {
-        const { name, value } = event.target;
-        console.log(name, value)
-        setParams((prevState) => ({ ...prevState, [name]: value }));
+    const handleParamChange = (e) => {
+        // setIsSubmit(false);
+        const change = e.target.name;
+        let values = e.target.value;
+        console.log(change, values, Number(values));
+        // if (!isNaN(Number(values))){
+        //     values = Number(values);
+        // }
+        if (change === "n_components") { setParams({...params, n_components:values}); }
+        else if (change === "perplexity") { setParams({...params, perplexity:values}); }
+        else if (change === "early_exaggeration") { setParams({...params, early_exaggeration:values}); }
+        else if (change === "learning_rate") { setParams({...params, learning_rate:values}); }
+        else if (change === "n_iter") { setParams({...params, n_iter:parseInt(values)}); }
+        else if (change === "n_iter_without_progress") { setParams({...params, n_iter_without_progress:parseInt(values)}); }
+        else if (change === "init") { setParams({...params, init:values}); }
+        else if (change === "verbose") { setParams({...params, verbose:values}); }
+        else if (change === "angle") { setParams({...params, angle:values}); }
     };
+    // const handleParamChange = (event) => {
+    //     const { name, value } = event.target;
+    //     console.log(name, value)
+    //     setParams((prevState) => ({ ...prevState, [name]: value }));
+    // };
     
     const handleSubmit = async () => {
         console.log('Submit custom parameter input form')
         // setIsSubmit(false);
-        tsne_parameter = makePathParams(params);
-        console.log(tsne_parameter)
+        // tsne_parameter = makePathParams(params);
+        // console.log(tsne_parameter)
         await fetchImage(params);
         // setTimeout(() => {
         // setIsSubmit(true);
         // }, 1000);
         console.log('finish submit');
     }
-    
-    const renderImage = (
-        <div>
+    useEffect(() => {
+        console.log("error status", status)
+    }, [status]);
+
+    const renderImage = 
+        (<div>
             <Image
                 src={img}
                 alt="T-SNE Projection"
                 width={500}
                 height={500}
             />
-        </div>
-    )
+        </div>)
+    
+    const errorImage=
+        (<div className='flex justify-center items-center gap-2'>
+            <Image
+                src={Error}
+                alt="Error"
+                width={50}
+                height={50}
+            />
+            <span className='text-lg text-red-600'>Something went wrong! Please try again.</span>
+        </div>)
+    const waitForTsne = 
+        (<div>
+            <span>Waiting for submit t-SNE </span>
+        </div>)
 
     return (
         <div className="bg-fuchsia-50 p-2 h-full">
@@ -183,15 +205,12 @@ function Images() {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
-            <div className='flex gap-4 '>
-            <div className='border hover:bg-gray-200'><Link href="/" >Back</Link></div>
-                <div>T-SNE</div>
-            </div>
+            <div className='font-bold'>T-SNE</div>
             
             <TsneParamsInput props={params} handleChange={handleParamChange} handleSubmit={handleSubmit}></TsneParamsInput>
             
             <div className='flex justify-center items-center'>
-                {isLoading ? <LoadingSpinner /> : renderImage}
+                {isLoading ? <LoadingSpinner /> : status==="success" ? renderImage : status==="fail" ? errorImage : status==="wait" ? waitForTsne: <></>}
             </div>
 
             {/* {isSubmit ? 
@@ -213,8 +232,7 @@ function Images() {
                 <></>
             } */}
 
-            {/* <button onClick={() => handleDownload()}>download</button> */}
-            <DownloadButton></DownloadButton>
+            <DownloadButton isDisable={status==="success" ? false : true}></DownloadButton>
         </div>
     )
 }

@@ -9,6 +9,7 @@ import axios from 'axios'
 
 import UmapParamsInput from '../src/components/UmapParam'
 import DownloadButton from "../src/components/DownloadButton";
+import Error from "../public/error_icon.svg"
 
 const makePathParams = (params) => {
     console.log('make param', params);
@@ -21,6 +22,7 @@ function Images() {
     const [img, setImg] = useState('');
     const [isSubmit, setIsSubmit] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [status, setStatus] = useState("wait");
 
     let url;
     let body = {
@@ -37,11 +39,11 @@ function Images() {
         // verbose: 1
     }
     const [params, setParams] = useState(body);
-    let umap_parameter = makePathParams(params)
+    // let umap_parameter = makePathParams(params)
 
-    useEffect(() => {
-        fetchImage(umap_parameter)
-    }, []);
+    // useEffect(() => {
+    //     fetchImage(params)
+    // }, []);
 
     useEffect(() => {
         console.log('params was changed', params);
@@ -51,7 +53,7 @@ function Images() {
     // const myLoader = ({ src, width, quality }) => {
     //     return `http://localhost:8000/umap/predict/umap-image?${makePathParams(params)}`
     // }
-    const fetchImage = useCallback(async (parameter) => {
+    const fetchImage = useCallback(async (params) => {
         setIsLoading(true);
         // try {
         //     console.log('fetchImage with params:', parameter)
@@ -88,46 +90,46 @@ function Images() {
             // url = window.URL.createObjectURL(response)           
             setIsLoading(false);
             console.log('url:', url)
-
+            setStatus("success")
         } catch (error) {
             setImg('/')
             console.error(error);
             setIsLoading(false);
+            setStatus("fail");
         }
-      
-
-
     }, []);
 
-    // const handleChange = (change, values) => {
-    //     // setIsSubmit(false);
-    //     // console.log(change, values);
-    //     if (values === null) {
-    //         console.log()
-    //         values = null
-    //     }
-    //     if (change === "n_components") { setParams({...params, n_components:values}); }
-    //     else if (change === "n_neighbors") { setParams({...params, n_neighbors:values}); }
-    //     else if (change === "metric") { setParams({...params, metric:values}); }
-    //     else if (change === "learning_rate") { setParams({...params, learning_rate:values}); }
-    //     else if (change === "n_epochs") { setParams({...params, n_epochs:values}); }
-    //     else if (change === "min_dist") { setParams({...params, min_dist:values}); }
-    //     else if (change === "init") { setParams({...params, init:values}); }
-    //     else if (change === "spread") { setParams({...params, spread:values}); }
-    //     else if (change === "low_memory") { setParams({...params, low_memory:values}); }
-    //     else if (change === "transform_seed") { setParams({...params, transform_seed:values}); }
-    // };
-    const handleParamChange = (event) => {
-        const { name, value } = event.target;
-        setParams((prevState) => ({ ...prevState, [name]: value }));
+    const handleParamChange = (e) => {
+        // setIsSubmit(false);
+        const change = e.target.name;
+        let values = e.target.value;
+        console.log(change, values, Number(values));        
+        // if (values === null) {
+        //     console.log()
+        //     values = null
+        // }
+        if (change === "n_components") { setParams({...params, n_components:values}); }
+        else if (change === "n_neighbors") { setParams({...params, n_neighbors:parseInt(values)}); }
+        else if (change === "metric") { setParams({...params, metric:values}); }
+        else if (change === "learning_rate") { setParams({...params, learning_rate:values}); }
+        else if (change === "n_epochs") { setParams({...params, n_epochs:parseInt(values)}); }
+        else if (change === "min_dist") { setParams({...params, min_dist:values}); }
+        else if (change === "init") { setParams({...params, init:values}); }
+        else if (change === "spread") { setParams({...params, spread:values}); }
+        else if (change === "low_memory") { setParams({...params, low_memory:values}); }
+        else if (change === "transform_seed") { setParams({...params, transform_seed:values}); }
     };
+    // const handleParamChange = (event) => {
+    //     const { name, value } = event.target;
+    //     setParams((prevState) => ({ ...prevState, [name]: value }));
+    // };
 
     const handleSubmit = async () => {
         console.log('Submit custom parameter input form')
         // setIsSubmit(false);
-        umap_parameter = makePathParams(params);
-        console.log(umap_parameter)
-        await fetchImage(umap_parameter);
+        // umap_parameter = makePathParams(params);
+        // console.log(umap_parameter)
+        await fetchImage(params);
         // setTimeout(() => {
         // setIsSubmit(true);
         // }, 1000);
@@ -144,6 +146,20 @@ function Images() {
             />
         </div>
     )
+    const errorImage=
+        (<div className='flex justify-center items-center gap-2'>
+            <Image
+                src={Error}
+                alt="Error"
+                width={50}
+                height={50}
+            />
+            <span className='text-lg text-red-600'>Something went wrong! Please try again.</span>
+        </div>)
+    const waitForTsne = 
+        (<div>
+            <span className='text-lg'>Waiting for submit UMAP</span>
+        </div>)
 
     return (
         <div className="bg-fuchsia-50 p-2 h-full">
@@ -153,13 +169,13 @@ function Images() {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
-            <div className='flex gap-4 '>
-            <div className='border hover:bg-gray-200'><Link href="/" >Back</Link></div>
-                <div>UMAP</div>
-            </div>
+            <div className='font-bold'>UMAP</div>
             <UmapParamsInput props={params} handleChange={handleParamChange} handleSubmit={handleSubmit}></UmapParamsInput>
-
-            {isLoading ? <LoadingSpinner /> : renderImage}
+            
+            <div className='flex justify-center items-center'>
+                {isLoading ? <LoadingSpinner /> : status==="success" ? renderImage : status==="fail" ? errorImage : status==="wait" ? waitForTsne: <></>}
+            </div>
+            
             <DownloadButton></DownloadButton>
 
         </div>

@@ -10,18 +10,28 @@ import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 
 export default function TsneParamsInput({ props, handleChange, handleSubmit }) {
-    const [ collapse, setCollapse ] = useState(false);
-    console.log(props)
+        const [ collapse, setCollapse ] = useState(false);
+        const [ isDisable, setIsDisable ] = useState(false);
 
-    return (
+        useEffect(() => {
+                console.log("props.learning_rate", props.learning_rate)
+                if (isNaN(props.learning_rate) && props.learning_rate !== "auto"){
+                        setIsDisable(true);
+                }
+                else {
+                        setIsDisable(false);
+                }
+        },[props.learning_rate]);
+
+        return (
         <div className="w-1/2 min-w-[500px]">
-            <button onClick={() => setCollapse(!collapse)} className="m-2 mb-0">
-                <span className="mx-2 text-lg font-bold">Custom T-SNE Parameters</span>
+            <button onClick={() => setCollapse(!collapse)} className="m-2 flex justify-center items-center gap-2">
+                <span className=" text-lg font-bold">Custom T-SNE Parameters</span>
                 <Image src={arrowDown} alt="arrowDown" width={20} height={15}></Image>
             </button>
 
             <Collapse isOpened={collapse}>
-                <form className="grid grid-cols-3 gap-3 ml-2 mb-4">
+                <form className="grid grid-cols-3 gap-2 ml-2 mb-4">
                         <label for="n_components">n_components</label>
                         <select id="n_components" name="n_components" className="input-box" value={props.n_components}
                                 // onChange={(e) => {e.preventDefault(); handleChange(); }}
@@ -39,7 +49,7 @@ export default function TsneParamsInput({ props, handleChange, handleSubmit }) {
                         </Popup>      
 
                         <label for="perplexity">perplexity</label>
-                        <input type="number" id="perplexity" name="perplexity" className="input-box" value={props.perplexity}
+                        <input type="number" id="perplexity" name="perplexity" className="input-box" step="any" value={props.perplexity}
                                 onChange={handleChange}></input>
                         <Popup trigger={<div className="flex items-center justify-center w-5 h-5 mt-1 rounded-full border bg-white hover:bg-gray-200 cursor-pointer">?</div>} 
                         position="right center">
@@ -74,7 +84,7 @@ export default function TsneParamsInput({ props, handleChange, handleSubmit }) {
                         </Popup>    
 
                         <label for="n_iter">n_iter</label>
-                        <input type="number" id="n_iter" name="n_iter" className="input-box" value={props.n_iter}
+                        <input type="number" id="n_iter" name="n_iter" className="input-box" value={props.n_iter} step="1"
                                 onChange={handleChange}></input>
                                 {/* onChange={(e) => {e.preventDefault(); handleChange(); }}></input> */}
                         <Popup trigger={<div className="flex items-center justify-center w-5 h-5 mt-1 rounded-full border bg-white hover:bg-gray-200 cursor-pointer">?</div>} 
@@ -86,7 +96,7 @@ export default function TsneParamsInput({ props, handleChange, handleSubmit }) {
                         </Popup>    
 
                         <label for="n_iter_without_progress">n_iter_without_progress</label>
-                        <input type="number" id="n_iter_without_progress" name="n_iter_without_progress" className="input-box" value={props.n_iter_without_progress}
+                        <input type="number" id="n_iter_without_progress" name="n_iter_without_progress" className="input-box" value={props.n_iter_without_progress} step="1"
                                 onChange={handleChange}></input>
                                 {/* onChange={(e) => {e.preventDefault(); handleChange(); }}></input> */}
                         <Popup trigger={<div className="flex items-center justify-center w-5 h-5 mt-1 rounded-full border bg-white hover:bg-gray-200 cursor-pointer">?</div>} 
@@ -137,11 +147,12 @@ export default function TsneParamsInput({ props, handleChange, handleSubmit }) {
                         </div>
                         </Popup>    
                         
-                        <input type="submit" className="mt-2 border-2 bg-white hover:bg-fuchsia-400 hover:text-white hover:cursor-pointer" 
-                                onClick={(e) => {e.preventDefault(); handleSubmit();}} value="Submit"></input>
                 </form>
-            </Collapse>
+                </Collapse>
+                {isDisable === true ? <div className="mx-2 text-red-600">learning_rate value should be auto or Number.</div> : <div></div>}
+                <input type="submit" className="m-2 p-1 rounded border-2 bg-white hover:bg-fuchsia-400 enabled:hover:text-white enabled:hover:cursor-pointer disabled:bg-gray-300" 
+                        onClick={(e) => {e.preventDefault(); handleSubmit();}} value="Visualize" disabled={isDisable}></input>
 
         </div>
-    )
+        )
 }

@@ -25,8 +25,11 @@ const menuItems = [
     // },
 ];
 
-function Sidebar() {
+function RightSidebar({ isDisable }) {
     // const [fileName, setFileName] = useState("");
+    useEffect(() => {
+        console.log("isDisable from Rightsidebar:", isDisable)
+    }, [isDisable]);
 
     return (
         <div className="bg-fuchsia-100 w-full sm:w-60">
@@ -35,7 +38,10 @@ function Sidebar() {
                 <ul>
                     {menuItems.map(({ href, title }) => (
                         <li className='m-2' key={title}>
-                        <Link href={href}>
+                        <Link href={{
+                                pathname: href,
+                                // query: {disable: isDisable},
+                            }}>
                             <a
                                 className={`flex p-2 bg-fuchsia-200 rounded hover:bg-fuchsia-400 hover:text-white cursor-pointer`}
                             >
@@ -50,4 +56,4 @@ function Sidebar() {
     );
 };    
 
-export default Sidebar;
+export default RightSidebar;
