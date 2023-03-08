@@ -124,9 +124,9 @@ function Sidebar({ isDisable }) {
     //     })
     // })
 
-    useEffect(() => {
-        console.log('file list', list);
-    }, [list])
+    // useEffect(() => {
+    //     console.log('file list', list);
+    // }, [list])
 
     const uploadFile = async (file) => {
         console.log("upload file", file);
@@ -202,9 +202,7 @@ function Sidebar({ isDisable }) {
         }
 
     }
-    useEffect(() => {
-        console.log("isNull: ", isNull);
-    }, [isNull]);
+
 
     return (
         <div className="bg-fuchsia-100 w-full sm:w-60">
@@ -243,8 +241,8 @@ function Sidebar({ isDisable }) {
                             <div>Select Class Label </div>
                             <select id="label_class" name="label_class" className="input-box"
                                     onChange={(e) => {setSelectedOption(e.target.value); handleChangeSelectLabelAttr(e);}} value={selectedOption}>
-                                {dataAttr.map((attr) => (
-                                    <option >{attr}</option>
+                                {dataAttr.map((attr, index) => (
+                                    <option value={attr} key={attr}>{attr}</option>
                                 ))}
                             </select>
                         </div>
@@ -258,17 +256,7 @@ function Sidebar({ isDisable }) {
                         </ul> */}
 
                     </li>
-                    {/* {menuItems.map(({ href, title }) => (
-                        <li className='m-2' key={title}>
-                        <Link href={href}>
-                            <a
-                                className={`flex p-2 bg-fuchsia-200 rounded hover:bg-fuchsia-400 hover:text-white cursor-pointer`}
-                            >
-                            {title}
-                            </a>
-                        </Link>
-                        </li>
-                    ))} */}
+
                 </ul>
             </nav>
         </div>
