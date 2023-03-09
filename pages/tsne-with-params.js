@@ -27,7 +27,9 @@ function Images({ props }) {
     const [isSubmit, setIsSubmit] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [status, setStatus] = useState("wait");
+    const [timeUse, setTimeUse] = useState();
 
+    let st, et;
     let url;
     let body = {
         n_components: 2,
@@ -40,7 +42,7 @@ function Images({ props }) {
         angle: 0.5
     }
     const [params, setParams] = useState(body);
-    let tsne_parameter = makePathParams(params)
+    // let tsne_parameter = makePathParams(params)
 
     // t-SNE เมื่อเข้าที่หน้าเพจ
     // useEffect(() => {
@@ -162,10 +164,15 @@ function Images({ props }) {
         // setIsSubmit(false);
         // tsne_parameter = makePathParams(params);
         // console.log(tsne_parameter)
+        setTimeUse(0);
+        st = Date.now();
         await fetchImage(params);
+        et = Date.now();
+        setTimeUse((et-st)/1000);
         // setTimeout(() => {
         // setIsSubmit(true);
         // }, 1000);
+        console.log("time use: ", timeUse ,"s");
         console.log('finish submit');
     }
     useEffect(() => {
@@ -193,8 +200,8 @@ function Images({ props }) {
             <span className='text-lg text-red-600'>Something went wrong! Please try again.</span>
         </div>)
     const waitForTsne = 
-        (<div>
-            <span>Waiting for submit t-SNE </span>
+        (<div className='flex items-center h-[350px]'>
+            <span className='text-lg'>Waiting for submit t-SNE </span>
         </div>)
 
     return (
@@ -205,8 +212,17 @@ function Images({ props }) {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
-            <div className='font-bold'>T-SNE</div>
-            
+            <div className="flex gap-2 items-center">
+                <div className='font-bold text-xl'>t-SNE</div>
+                <Popup trigger={<div className="flex items-center justify-center w-4 h-4 rounded-full border bg-white hover:bg-gray-200 cursor-pointer">?</div>} 
+                            position="right center">
+                            <div className="p-1">
+                                    <div className="text-lg font-bold flex justify-center">t-SNE</div>
+                                    <div>To see more about this: <a href='https://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html' className='text-blue-500 underline'>scikit-learn t-SNE</a></div>
+                            </div>
+                </Popup>    
+            </div>
+
             <TsneParamsInput props={params} handleChange={handleParamChange} handleSubmit={handleSubmit}></TsneParamsInput>
             
             <div className='flex justify-center items-center'>
@@ -231,8 +247,10 @@ function Images({ props }) {
             :
                 <></>
             } */}
-
-            <DownloadButton isDisable={status==="success" ? false : true}></DownloadButton>
+            <div className='flex justify-between items-center'>
+                <DownloadButton isDisable={status==="success" ? false : true}></DownloadButton>
+                {timeUse ? <div className='text-sm'>time use: {timeUse} s.</div> : <></> }
+            </div>
         </div>
     )
 }

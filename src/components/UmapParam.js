@@ -129,8 +129,6 @@ export default function UmapParamsInput({ props, handleChange, handleSubmit }) {
                                 onChange={handleChange}>
                                 <option value="spectral">spectral</option>
                                 <option value="random">random</option>
-                                <option value="pca">pca</option>
-
                         </select>
                                 {/* onChange={(e) => {e.preventDefault(); handleChange("init",e.target.value); }}></input> */}
                         <Popup trigger={<div className="flex items-center justify-center w-5 h-5 mt-1 rounded-full border bg-white hover:bg-gray-200 cursor-pointer">?</div>} 

@@ -28,7 +28,7 @@ const menuItems = [
 function Sidebar({ isDisable }) {
     const [status, setStatus] = useState("");
     const [list, setList] = useState([]);
-    const [dataAttr, setDataAttr] = useState([]);
+    const [dataAttr, setDataAttr] = useState();
     const [isHoverHelpButton, setIsHoverHelpButton] = useState(false);
     const [selectedOption, setSelectedOption] = useState();
     const [dataInfo, setDataInfo] = useState();
@@ -69,7 +69,7 @@ function Sidebar({ isDisable }) {
                 console.log("data:", data);
                 // setSelectedOption(data.payload)
                 setDataAttr(data.all_class);
-                setSelectedOption(dataAttr[0]);
+                setSelectedOption(dataAttr ? dataAttr[0] : '-');
                 setDataInfo(data.shape);
                 setisNull(`${data.isNull}`);
                 isDisable(data.isNull);
@@ -132,13 +132,19 @@ function Sidebar({ isDisable }) {
         console.log("upload file", file);
         const formData = new FormData();
         formData.append('file', file);
-      
+
         const res = await fetch('http://localhost:8000/upload-file', {
-          method: 'POST',
-          body: formData
+            method: 'POST',
+            body: formData
         })            
         .then(res => res.json())
         .then(data => {
+            console.log("upload file response data:", data)
+            if (data.detail === "Invalid File Type!"){
+                setStatus("invalid_file_type");
+                console.log("Invalid File Type!")
+                return;
+            }
             isDisable(data.isNull);
             if (data.isNull) {
                 setStatus("Contain Null")
@@ -159,21 +165,8 @@ function Sidebar({ isDisable }) {
             console.log("Upload fail!");
             console.log(err);
         })
+    }
 
-    }
-      
-    const handleMouseOverHelpButton = (e) => {
-        console.log('hover');
-        setIsHoverHelpButton(true);
-    }
-    const handleMouseOutHelpButton = (e) => {
-        console.log('out');
-        setIsHoverHelpButton(false);
-    }
-    const handleClickHelpButton = (e) => {
-        e.preventDefault;
-        console.log('Help button click')
-    }
     const handleChangeSelectLabelAttr = async (e) => {
         e.preventDefault;
         console.log(e.target.value,);
@@ -222,6 +215,8 @@ function Sidebar({ isDisable }) {
                                     : 
                                     status==="fail" ? (<div className='m-2 text-red-500'>Upload Fail !</div>)
                                     :
+                                    status==="invalid_file_type" ? (<div className='m-2 text-red-500'>Invalid File Type!</div>)
+                                    :
                                     status==="Contain Null" ? (<div className='m-2 text-red-500'>Data contain null value</div>)
                                     :
                                     (<div className="hidden"></div>)
@@ -229,7 +224,7 @@ function Sidebar({ isDisable }) {
                                 {/* <span id="fileChosen">No file chosen</span> */}
                             </form>  
                             <Popup trigger={<div className="flex items-center justify-center w-8 h-5 mt-1 rounded-full border bg-white hover:bg-gray-200 cursor-pointer" 
-                                    onClick={handleClickHelpButton}>?</div>} 
+                                    >?</div>} 
                                 position="right center">
                                 <div className="p-2">
                                     <div className="text-lg font-bold flex justify-center">Data Limitation</div>
@@ -241,14 +236,14 @@ function Sidebar({ isDisable }) {
                             <div>Select Class Label </div>
                             <select id="label_class" name="label_class" className="input-box"
                                     onChange={(e) => {setSelectedOption(e.target.value); handleChangeSelectLabelAttr(e);}} value={selectedOption}>
-                                {dataAttr.map((attr, index) => (
+                                {dataAttr ? dataAttr.map((attr, index) => (
                                     <option value={attr} key={attr}>{attr}</option>
-                                ))}
+                                )) : <option value="-">-</option>}
                             </select>
                         </div>
                         <div className="m-2">Number of Records: {dataInfo ? `${dataInfo[0]}` : "-" }</div>
                         <div className="m-2">Nudmber of Features: {dataInfo ? `${dataInfo[1]}` : "-" }</div>
-                        <div className="m-2">Contain null value: {isNull ? isNull : ''}</div>
+                        <div className="m-2">Contain null value: {isNull ? isNull : '-'}</div>
                         {/* <ul>
                             {dataAttr.map((attr) => (
                                 <li>{attr}</li>

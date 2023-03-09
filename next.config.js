@@ -5,7 +5,6 @@ const nextConfig = {
   images: {
     domains: ['http://localhost:8000/'],
   },
-  basePath: '/gh-pages-test',
 }
 
 module.exports = nextConfig

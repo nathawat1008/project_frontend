@@ -11,6 +11,9 @@ import UmapParamsInput from '../src/components/UmapParam'
 import DownloadButton from "../src/components/DownloadButton";
 import Error from "../public/error_icon.svg"
 
+import Popup from 'reactjs-popup';
+import 'reactjs-popup/dist/index.css';
+
 const makePathParams = (params) => {
     console.log('make param', params);
     return `n_components=${params.n_components}&n_neighbors=${params.n_neighbors}&metric=${params.metric}`
@@ -23,7 +26,9 @@ function Images() {
     const [isSubmit, setIsSubmit] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [status, setStatus] = useState("wait");
+    const [timeUse, setTimeUse] = useState();
 
+    let st, et;
     let url;
     let body = {
         n_neighbors: 15,
@@ -129,10 +134,15 @@ function Images() {
         // setIsSubmit(false);
         // umap_parameter = makePathParams(params);
         // console.log(umap_parameter)
+        setTimeUse(0);
+        st = Date.now();
         await fetchImage(params);
+        et = Date.now();
+        setTimeUse((et-st)/1000);
         // setTimeout(() => {
         // setIsSubmit(true);
         // }, 1000);
+        console.log("time use: ", timeUse ,"s");
         console.log('finish submit');
     }
     
@@ -157,7 +167,7 @@ function Images() {
             <span className='text-lg text-red-600'>Something went wrong! Please try again.</span>
         </div>)
     const waitForTsne = 
-        (<div>
+        (<div className='flex items-center h-[350px]'>
             <span className='text-lg'>Waiting for submit UMAP</span>
         </div>)
 
@@ -169,15 +179,27 @@ function Images() {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
-            <div className='font-bold'>UMAP</div>
+            <div className="flex gap-2 items-center">
+                <div className='font-bold text-xl'>UMAP</div>
+                <Popup trigger={<div className="flex items-center justify-center w-4 h-4 rounded-full border bg-white hover:bg-gray-200 cursor-pointer">?</div>} 
+                            position="right center">
+                            <div className="p-1">
+                                    <div className="text-lg font-bold flex justify-center">UMAP</div>
+                                    <div>To see more about this: <a href='https://umap-learn.readthedocs.io/en/latest/api.html' className='text-blue-500 underline'>UMAP Guide</a></div>
+                            </div>
+                </Popup>    
+            </div>
+
             <UmapParamsInput props={params} handleChange={handleParamChange} handleSubmit={handleSubmit}></UmapParamsInput>
             
             <div className='flex justify-center items-center'>
                 {isLoading ? <LoadingSpinner /> : status==="success" ? renderImage : status==="fail" ? errorImage : status==="wait" ? waitForTsne: <></>}
             </div>
             
-            <DownloadButton></DownloadButton>
-
+            <div className='flex justify-between items-center'>
+                <DownloadButton isDisable={status==="success" ? false : true}></DownloadButton>
+                {timeUse ? <div className='text-sm'>time use: {timeUse} s.</div> : <></> }
+            </div>
         </div>
     )
 }

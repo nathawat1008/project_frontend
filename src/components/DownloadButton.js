@@ -22,7 +22,7 @@ function DownloadButton({ isDisable }) {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-
+      console.log("download success")
       setIsLoading(false);
     }
     

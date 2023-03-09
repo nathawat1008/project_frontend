@@ -103,7 +103,7 @@ export default function TsneParamsInput({ props, handleChange, handleSubmit }) {
                         position="right center">
                         <div className="p-1">
                                 <div className="text-lg font-bold flex justify-center">n_iter_without_progress</div>
-                                <div >Maximum number of iterations without progress before we abort the optimization, used after 250 initial iterations with early exaggeration.</div>
+                                <div >Maximum number of iterations without progress before we abort the optimization, used after 250 initial iterations with early exaggeration. Note that progress is only checked every 50 iterations so this value is rounded to the next multiple of 50.</div>
                         </div>
                         </Popup>    
 
@@ -123,19 +123,8 @@ export default function TsneParamsInput({ props, handleChange, handleSubmit }) {
                         </div>
                         </Popup>    
 
-                        {/* <label for="verbose">verbose</label>
-                        <input type="number" id="verbose" name="verbose" className="input-box" value={props.verbose}
-                                onChange={(e) => {e.preventDefault(); handleChange("verbose",e.target.value); }}></input>
-                        <Popup trigger={<div className="flex items-center justify-center w-5 h-5 mt-1 rounded-full border bg-white hover:bg-gray-200 cursor-pointer">?</div>} 
-                        position="right center">
-                        <div className="p-1">
-                                <div className="text-lg font-bold flex justify-center">Data Limitation</div>
-                                <div >The data used must be numerical data that have less than 1000 dimension </div>
-                        </div>
-                        </Popup>     */}
-
                         <label for="angle">angle</label>
-                        <input type="number" id="angle" name="angle" className="input-box" value={props.angle}
+                        <input type="number" id="angle" name="angle" className="input-box" value={props.angle} max="1.0" min="0.0"
                                 onChange={handleChange}>        
                         </input>
                                 {/* onChange={(e) => {e.preventDefault(); handleChange(); }}></input> */}
