@@ -23,7 +23,6 @@ const makePathParams = (params) => {
 
 function Images() {
     const [img, setImg] = useState('');
-    const [isSubmit, setIsSubmit] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [status, setStatus] = useState("wait");
     const [timeUse, setTimeUse] = useState();
@@ -44,47 +43,12 @@ function Images() {
         // verbose: 1
     }
     const [params, setParams] = useState(body);
-    // let umap_parameter = makePathParams(params)
 
-    // useEffect(() => {
-    //     fetchImage(params)
-    // }, []);
-
-    useEffect(() => {
-        console.log('params was changed', params);
-        // umap_parameter = makePathParams(params)
-    }, [params]);
-
-    // const myLoader = ({ src, width, quality }) => {
-    //     return `http://localhost:8000/umap/predict/umap-image?${makePathParams(params)}`
-    // }
     const fetchImage = useCallback(async (params) => {
         setIsLoading(true);
-        // try {
-        //     console.log('fetchImage with params:', parameter)
-        //     const res = await fetch(`http://localhost:8000/umap/umap-visualize?${parameter}`, {
-        //         method: 'GET',
-        //     })
-        //     .then(res => {return res.blob();})
-        //     .then(data => {
-        //         console.log('data', data)
-        //         url = window.URL.createObjectURL(data)           
-        //         setImg(url)
-        //         setIsLoading(false);
-        //         console.log('url:', url)
-        //     })
-        // } 
-        // catch(err) {
-        //     setImg('/')
-        //     setIsLoading(false);
-        //     console.log('Error', err);
-        //     return err
-        // }
         try {
             console.log("body:", params)
             const response = await axios.post('http://localhost:8000/umap/umap-visualize', params, { responseType:"blob" })
-                                        // .then((res) => {console.log(res)});
-            // response.blob()
             console.log('response', response)
             var reader = new window.FileReader();
             reader.readAsDataURL(response.data); 
@@ -105,14 +69,10 @@ function Images() {
     }, []);
 
     const handleParamChange = (e) => {
-        // setIsSubmit(false);
         const change = e.target.name;
         let values = e.target.value;
         console.log(change, values, Number(values));        
-        // if (values === null) {
-        //     console.log()
-        //     values = null
-        // }
+
         if (change === "n_components") { setParams({...params, n_components:values}); }
         else if (change === "n_neighbors") { setParams({...params, n_neighbors:parseInt(values)}); }
         else if (change === "metric") { setParams({...params, metric:values}); }
@@ -124,24 +84,14 @@ function Images() {
         else if (change === "low_memory") { setParams({...params, low_memory:values}); }
         else if (change === "transform_seed") { setParams({...params, transform_seed:values}); }
     };
-    // const handleParamChange = (event) => {
-    //     const { name, value } = event.target;
-    //     setParams((prevState) => ({ ...prevState, [name]: value }));
-    // };
 
     const handleSubmit = async () => {
         console.log('Submit custom parameter input form')
-        // setIsSubmit(false);
-        // umap_parameter = makePathParams(params);
-        // console.log(umap_parameter)
         setTimeUse(0);
         st = Date.now();
         await fetchImage(params);
         et = Date.now();
         setTimeUse((et-st)/1000);
-        // setTimeout(() => {
-        // setIsSubmit(true);
-        // }, 1000);
         console.log("time use: ", timeUse ,"s");
         console.log('finish submit');
     }

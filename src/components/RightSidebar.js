@@ -5,12 +5,6 @@ import Popup from 'reactjs-popup';
 // import 'reactjs-popup/dist/index.css';
 
 const menuItems = [
-    // {
-    //     href: '/tsne-img',
-    //     title: 'T-SNE',
-    //     params: {n_comp: 2,
-    //              perplexity: 30},
-    // },
     {
         href: '/tsne-with-params',
         title: 'T-SNE ',
@@ -19,10 +13,7 @@ const menuItems = [
         href: '/umap-with-params',
         title: 'UMAP',
     },
-    // {
-    //     href: '/data-after',
-    //     title: 'data after t-sne',
-    // },
+
 ];
 
 function RightSidebar({ isDisable }) {

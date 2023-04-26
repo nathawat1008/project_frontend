@@ -35,31 +35,8 @@ function Sidebar({ isDisable }) {
     const [isNull, setisNull] = useState();
     // const [fileName, setFileName] = useState("");
 
-    const getLabelClass = async () => {
-        try{
-            await fetch('http://localhost:8000/get-data-detail', {
-                method: 'GET',
-            })
-            .then(res => res.json())
-            .then(data => {
-                console.log("data:", data);
-                // setSelectedOption(data.payload)
-                setDataAttr(data.all_class);
-                setSelectedOption(dataAttr[0]);
-                setDataInfo(data.shape);
-                setisNull(`${data.isNull}`);
-                isDisable(data.isNull);
-            })
-        }
-        catch(e) {
-            console.log(e);
-        }
-    }
-
     useEffect(() => {
-        // (async () => {
-        //     await getLabelClass();
-        // })
+
         try{
             fetch('http://localhost:8000/get-data-detail', {
                 method: 'GET',
@@ -80,53 +57,6 @@ function Sidebar({ isDisable }) {
         }
 
     }, []);
-
-    // useEffect(() => {
-    //     const actualBtn = document.getElementById('uploadFile');
-    
-    //     const fileChosen = document.getElementById('fileChosen');
-        
-    //     actualBtn.addEventListener('change', function(){
-    //         console.log(this.file)
-    //         setFileName(this.file[0].name)
-    //     })
-
-    //     const uploadForm = document.querySelector('.upload')
-
-    //     uploadForm.addEventListener('submit', function(e) {
-    //         e.preventDefault()
-    //         let file = e.target.uploadFile.files[0]
-    //         let formData = new FormData()
-    //         formData.append('file', file)
-    //         fetch('http://localhost:8000/upload-file', {
-    //             method: 'POST',
-    //             body: formData
-    //         })
-    //         .then(res => res.json())
-    //         .then(data => {
-    //             if (data.errors) {
-    //                 alert(data.errors);
-    //             }
-    //             else {
-    //                 setStatus("success");
-    //                 setList([...list, data.filename]);
-    //                 setDataAttr(data.attr); 
-    //                 setDataInfo(data.shape);
-    //                 console.log('upload success !');
-    //                 console.log(data);
-    //             }
-    //         })
-    //         .catch(err => {
-    //             setStatus("fail");
-    //             console.log("Upload fail!");
-    //             console.log(err);
-    //         })
-    //     })
-    // })
-
-    // useEffect(() => {
-    //     console.log('file list', list);
-    // }, [list])
 
     const uploadFile = async (file) => {
         console.log("upload file", file);
@@ -181,9 +111,6 @@ function Sidebar({ isDisable }) {
             })
             .then(res => res.json())
             .then(data => {
-                // setStatus("success");
-                // setList([...list, data.filename]);
-                // setDataAttr(data.attr); 
                 console.log('Change label attribute success !');
                 console.log(data);
             })
@@ -244,11 +171,6 @@ function Sidebar({ isDisable }) {
                         <div className="m-2">Number of Records: {dataInfo ? `${dataInfo[0]}` : "-" }</div>
                         <div className="m-2">Nudmber of Features: {dataInfo ? `${dataInfo[1]}` : "-" }</div>
                         <div className="m-2">Contain null value: {isNull ? isNull : '-'}</div>
-                        {/* <ul>
-                            {dataAttr.map((attr) => (
-                                <li>{attr}</li>
-                            ))}
-                        </ul> */}
 
                     </li>
 

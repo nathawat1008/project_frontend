@@ -13,45 +13,7 @@ export const config = {
   },
 }
 
-async function load_pic() {
-  const url = 'http://127.0.0.1:8000/predict/tsne-image'
-  const options = {
-      method: "GET"
-  }
-
-  let response = await fetch(url, options)
-
-  if (response.status === 200) {
-      const imageBlob = await response.blob()
-      const imageObjectURL = URL.createObjectURL(imageBlob);
-
-      const image = document.createElement('img')
-      image.src = imageObjectURL
-
-      const container = document.getElementById("your-container")
-      container.append(image)
-  }
-  else {
-      console.log("HTTP-Error: " + response.status)
-  }
-}
-
 function Home({ data }) {
-
-  const myLoader = ({ src, width, quality }) => {
-    return `http://127.0.0.1:8000/predict/tsne-image`
-  }
-  const [image, setImage] = useState(null);
-  const [createObjectURL, setCreateObjectURL] = useState(null);
-
-  const uploadToClient = (event) => {
-    if (event.target.files && event.target.files[0]) {
-      const i = event.target.files[0];
-
-      setImage(i);
-      setCreateObjectURL(URL.createObjectURL(i));
-    }
-  };
 
   return (
     <div>
